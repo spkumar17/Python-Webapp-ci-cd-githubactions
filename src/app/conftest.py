@@ -1,4 +1,4 @@
-from app import create_app
+from . import create_app
 import pytest
 
 app = create_app()
