@@ -46,4 +46,4 @@ jobs:
 
       - name: run the filesystem scan
         run: |
-          trivy fs --scanners vuln --format table .
+          trivy fs --scanners vuln --format table src/
