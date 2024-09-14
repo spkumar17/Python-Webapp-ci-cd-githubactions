@@ -25,4 +25,5 @@ jobs:
 
       # Step 4: Run tests
       - name: Run unit tests
-        run: pytest src/app/tests/ # Adjust the path to match your test directory
+        run: |
+          pytest
