@@ -23,9 +23,6 @@ jobs:
       - name: Install dependencies
         run: pip install -r src/requirements.txt
 
-      # Step 4: Run the Flask application
-      - name: Run Flask app
-        run: python src/app.py
-
+      # Step 4: Run tests
       - name: Run tests
-        run: pytest src/test/
+        run: pytest src/tests/ # Adjust the path to match your test directory
