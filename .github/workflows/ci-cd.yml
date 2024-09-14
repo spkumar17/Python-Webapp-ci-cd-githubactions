@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  Dockerizing-Flask-App:
+  checkout-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,3 +27,20 @@ jobs:
       - name: Run unit tests
         run: |
           pytest
+
+  trivyfs:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install trivy
+        run: |
+          sudo apt-get install wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install trivy
+
+      - name: run the filesystem scan
+        run: |
+          trivy fs --security-checks vuln --format table .
