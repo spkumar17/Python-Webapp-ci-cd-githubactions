@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  dockerbuild:
+  Dockerizing-Flask-App:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,11 +21,11 @@ jobs:
 
       # Step 3: Install dependencies from requirements.txt
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r src/app/requirements.txt
 
       # Step 4: Run the Flask application
       - name: Run Flask app
-        run: python app.py
+        run: python src/app.py
 
       - name: Run tests
         run: pytest src/test/
