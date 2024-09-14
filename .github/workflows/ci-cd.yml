@@ -29,7 +29,7 @@ jobs:
           pytest
 
   trivyfs:
-    needs: checkout-test
+    #  needs: checkout-test
     runs-on: ubuntu-latest
 
     steps:
@@ -43,4 +43,4 @@ jobs:
 
       - name: run the filesystem scan
         run: |
-          trivy fs --scanners vuln --format table src
+          trivy fs --scanners vuln --format table src/
