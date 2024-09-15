@@ -72,8 +72,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up Docker
-        uses: docker/setup-buildx-action@v2
+        run: |
+          sudo apt update -y
+          sudo apt install docker.io -y
+          sudo usermod -aG docker $USER
+
       - name: docker build
         run: |
           Docker --version
-          Docker buildx build -t prasannakumarsinganamalla431/python-github-action:$GITHUB_ACTION_ID .
+          Docker build -t prasannakumarsinganamalla431/python-github-action:$GITHUB_ACTION_ID .
