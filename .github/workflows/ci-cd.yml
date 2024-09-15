@@ -83,7 +83,32 @@ jobs:
           docker images
           pwd
           ls -a
-      - uses: actions/upload-artifact@v4
+      - name: Tar and Upload a Build Artifact -- > name of plugin
+        uses: actions/upload-artifact@v4
         with:
           name: python-artifact
           path: python_Dockerbuild.tar
+
+  trivy-image-scan:
+    needs: checkout-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install trivy
+        run: |
+          sudo apt update -y
+          sudo apt-get install wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install trivy
+
+      - name: Download and Untar a Build Artifact -- > name of plugin
+        uses: actions/download-artifact@v4
+        with:
+          path: python_Dockerbuild.tar
+      - name: run the image scan
+        run: |
+          docker load -i prasannakumarsinganamalla431/python-github-action:$GITHUB_JOB
+          trivy image --scanners vuln --format table  prasannakumarsinganamalla431/backendmarn:$CI_PIPELINE_ID
