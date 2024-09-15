@@ -16,25 +16,17 @@
 # CMD ["gunicorn", "-b", "0.0.0.0:5000", "run:app"]
 
 
-# Build stage
-FROM python:3.9-slim AS build
+FROM python:3.9-slim
 
 WORKDIR /app
 
 # Copy the requirements file and install dependencies
 COPY src/requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+
+RUN pip install -r requirements.txt
 
 # Copy the rest of the application code
 COPY src/ .
-
-# Stage 2: Runtime stage
-FROM python:3.9-slim
-
-WORKDIR /app
-
-# Copy the dependencies and application code from the build stage
-COPY --from=build /app /app
 
 EXPOSE 5000
 

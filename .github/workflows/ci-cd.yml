@@ -44,29 +44,34 @@ jobs:
 
       - name: run the filesystem scan
         run: |
-          trivy fs --scanners vuln --format table .
+          trivy fs --scanners vuln --format table -o trivyfs.html .
+      - name: Upload a Build Artifact -- > name of plugin
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivyfs-html
+          path: trivyfs.html
 
-  # sonar-scan:
-  #   needs: checkout-and-test
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
-  #     - uses: sonarsource/sonarqube-scan-action@master
-  #       env:
-  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  #         SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
-  #     # If you wish to fail your job when the Quality Gate is red, uncomment the
-  #     # following lines. This would typically be used to fail a deployment.
-  #     - uses: sonarsource/sonarqube-quality-gate-action@master
-  #       timeout-minutes: 5
-  #       env:
-  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  sonar-scan:
+    needs: checkout-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+      - uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
+      # If you wish to fail your job when the Quality Gate is red, uncomment the
+      # following lines. This would typically be used to fail a deployment.
+      - uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   Dockerbuild:
     needs:
-      # - sonar-scan
+      - sonar-scan
       - trivyfs
     runs-on: ubuntu-latest
 
@@ -83,7 +88,7 @@ jobs:
           docker save -o python_Dockerbuild.tar prasannakumarsinganamalla431/python-github-action:v1
           pwd
           ls -a
-      - name: Tar and Upload a Build Artifact -- > name of plugin
+      - name: Upload a Build Artifact -- > name of plugin
         uses: actions/upload-artifact@v4
         with:
           name: python-artifact
@@ -117,7 +122,12 @@ jobs:
       - name: run the image scan
         run: |
           docker load -i python_Dockerbuild.tar
-          trivy image --scanners vuln --format table  prasannakumarsinganamalla431/python-github-action:v1
+          trivy image --scanners vuln --format table  --output trivy-image-scan.txt prasannakumarsinganamalla431/python-github-action:v1
+      - name: Upload a Build Artifact -- > name of plugin
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivyfs-image-txt
+          path: trivy-image-scan.txt
 
   DockerPush:
     needs: trivy-image-scan
@@ -140,3 +150,22 @@ jobs:
         run: |
           docker load -i python_Dockerbuild.tar
           docker push prasannakumarsinganamalla431/python-github-action:v1
+
+  slackNotification:
+    needs:
+      - Dockerbuild
+      - trivy-image-scan
+      - DockerPush
+      - checkout-and-test
+      - sonar-scan
+      - trivyfs
+    name: Slack Notification Demo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Slack Notification
+        uses: bryannice/gitactions-slack-notification@2.0.0
+        env:
+          SLACK_INCOMING_WEBHOOK: ${{ secrets.SLACK_INCOMING_WEBHOOK }}
+          SLACK_MESSAGE: "CI/CD Pipeline Completed!\n\nThe scan reports are available in the workflow run artifacts:\n\n[Sonar Reports](${{ secrets.SONAR_URL }})\n\nYou can also view the Docker image at:\n[Docker Image Repository](https://hub.docker.com/repository/docker/prasannakumarsinganamalla431/python-github-action)\n\nPlease visit the workflow run page to download the reports."
+          SLACK_TITLE: "build successfull"
