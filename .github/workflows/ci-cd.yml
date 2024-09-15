@@ -76,4 +76,4 @@ jobs:
       - name: docker build
         run: |
           Docker --version
-          Docker build -t prasannakumarsinganamalla431/python-github-action:$GITHUB_ACTION_ID .
+          Docker buildx build -t prasannakumarsinganamalla431/python-github-action:$GITHUB_ACTION_ID .
