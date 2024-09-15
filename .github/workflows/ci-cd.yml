@@ -65,9 +65,9 @@ jobs:
   #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   Dockerbuild:
-    # needs:
-    #    - sonar-scan
-    #   - trivyfs
+    needs:
+      - sonar-scan
+      - trivyfs
     runs-on: ubuntu-latest
 
     steps:
@@ -77,10 +77,10 @@ jobs:
       - name: docker build
         run: |
           docker buildx build --load -t prasannakumarsinganamalla431/python-github-action:v1 .
+          docker images
       - name: Save Docker image as artifact
         run: |
           docker save -o python_Dockerbuild.tar prasannakumarsinganamalla431/python-github-action:v1
-          docker images
           pwd
           ls -a
       - name: Tar and Upload a Build Artifact -- > name of plugin
@@ -118,3 +118,25 @@ jobs:
         run: |
           docker load -i python_Dockerbuild.tar
           trivy image --scanners vuln --format table  prasannakumarsinganamalla431/python-github-action:v1
+
+  DockerPush:
+    needs: trivy-image-scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Download Docker Image Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: python-artifact # The same name as used in the upload step **** IMP****
+          path: ./
+      - name: docker push
+        run: |
+          docker load -i python_Dockerbuild.tar
+          docker push prasannakumarsinganamalla431/python-github-action:v1
