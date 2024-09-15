@@ -15,16 +15,28 @@
 
 # CMD ["gunicorn", "-b", "0.0.0.0:5000", "run:app"]
 
-#multi stage build:
 
-FROM python:3.9-slim-buster AS build
+# Build stage
+FROM python:3.9-slim AS build
+
 WORKDIR /app
-COPY src/requirements.txt .
+
+# Copy the requirements file and install dependencies
+COPY src/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-FROM python:3.9-alpine
-WORKDIR /app
-COPY --from=build /app /app
+# Copy the rest of the application code
 COPY src/ .
+
+# Stage 2: Runtime stage
+FROM python:3.9-alpine
+
+WORKDIR /app
+
+# Copy the dependencies and application code from the build stage
+COPY --from=build /app /app
+
 EXPOSE 5000
+
+# Command to run the application
 CMD ["gunicorn", "-b", "0.0.0.0:5000", "run:app"]
