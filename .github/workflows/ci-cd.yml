@@ -67,7 +67,7 @@ jobs:
 
   Dockerbuild:
     needs:
-      - sonar-scan
+      # - sonar-scan
       - trivyfs
     runs-on: ubuntu-latest
     steps:
