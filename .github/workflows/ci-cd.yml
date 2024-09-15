@@ -76,10 +76,10 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: docker build
         run: |
-          docker buildx build --load -t prasannakumarsinganamalla431/python-github-action:$GITHUB_JOB .
+          docker buildx build --load -t prasannakumarsinganamalla431/python-github-action:v1 .
       - name: Save Docker image as artifact
         run: |
-          docker save -o python_Dockerbuild.tar prasannakumarsinganamalla431/python-github-action:$GITHUB_JOB
+          docker save -o python_Dockerbuild.tar prasannakumarsinganamalla431/python-github-action:v1
           docker images
           pwd
           ls -a
@@ -117,4 +117,4 @@ jobs:
       - name: run the image scan
         run: |
           docker load -i python_Dockerbuild.tar
-          trivy image --scanners vuln --format table  prasannakumarsinganamalla431/python-github-action:$GITHUB_JOB
+          trivy image --scanners vuln --format table  prasannakumarsinganamalla431/python-github-action:v1
