@@ -90,7 +90,6 @@ jobs:
           path: python_Dockerbuild.tar
 
   trivy-image-scan:
-    needs: checkout-and-test
     runs-on: ubuntu-latest
 
     steps:
@@ -111,5 +110,5 @@ jobs:
           path: python_Dockerbuild.tar
       - name: run the image scan
         run: |
-          docker load -i prasannakumarsinganamalla431/python-github-action:$GITHUB_JOB
+          docker load -i python_Dockerbuild.tar
           trivy image --scanners vuln --format table  prasannakumarsinganamalla431/backendmarn:$CI_PIPELINE_ID
