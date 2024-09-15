@@ -79,11 +79,11 @@ jobs:
           docker buildx build --load -t prasannakumarsinganamalla431/python-github-action:$GITHUB_JOB .
       - name: Save Docker image as artifact
         run: |
-          docker save -o python_$GITHUB_JOB.tar prasannakumarsinganamalla431/python-github-action:$GITHUB_JOB
+          docker save -o python_Dockerbuild.tar prasannakumarsinganamalla431/python-github-action:$GITHUB_JOB
           docker images
           pwd
           ls -a
       - uses: actions/upload-artifact@v4
         with:
           name: python-artifact
-          path: python_$GITHUB_JOB.tar
+          path: python_Dockerbuild.tar
