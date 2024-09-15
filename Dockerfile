@@ -29,7 +29,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src/ .
 
 # Stage 2: Runtime stage
-FROM python:3.9-alpine
+FROM python:3.9-slim
 
 WORKDIR /app
 
