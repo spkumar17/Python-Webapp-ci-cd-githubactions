@@ -80,6 +80,8 @@ jobs:
       - name: Save Docker image as artifact
         run: |
           docker save -o python_$GITHUB_JOB.tar prasannakumarsinganamalla431/python-github-action:$GITHUB_JOB
+          docker images
+          pwd
       - uses: actions/upload-artifact@v4
         with:
           name: python-artifact
