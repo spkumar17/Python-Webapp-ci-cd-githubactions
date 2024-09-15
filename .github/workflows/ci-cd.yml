@@ -169,3 +169,4 @@ jobs:
           SLACK_INCOMING_WEBHOOK: ${{ secrets.SLACK_INCOMING_WEBHOOK }}
           SLACK_MESSAGE: "CI/CD Pipeline Completed!\n\nThe scan reports are available in the workflow run artifacts:\n\n[Sonar Reports](${{ secrets.SONAR_URL }})\n\nYou can also view the Docker image at:\n[Docker Image Repository](https://hub.docker.com/repository/docker/prasannakumarsinganamalla431/python-github-action)\n\nPlease visit the workflow run page to download the reports."
           SLACK_TITLE: "build successfull"
+#done
